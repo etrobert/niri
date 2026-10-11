@@ -5297,6 +5297,11 @@ impl Niri {
     pub fn send_frame_callbacks_on_fallback_timer(&mut self) {
         let _span = tracy_client::span!("Niri::send_frame_callbacks_on_fallback_timer");
 
+        // Nothing is visible, and redrawing clients would only keep the GPU awake.
+        if !self.monitors_active || self.output_state.is_empty() {
+            return;
+        }
+
         // Make up a bogus output; we don't care about it here anyway, just the throttling timer.
         let output = Output::new(
             String::new(),
